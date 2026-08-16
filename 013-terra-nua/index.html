@@ -13,7 +13,7 @@
 <style>
   html,body{margin:0;height:100%;background:#07080a;color:#e8e8e8;
     font-family:system-ui,'Segoe UI',sans-serif;overflow:hidden}
-  #tela{position:fixed;inset:0}
+  #tela{position:fixed;inset:0;touch-action:none}   /* o dedo gira o globo, nao rola a pagina */
   #hud{position:fixed;left:0;right:0;bottom:0;padding:14px 18px 16px;
     background:linear-gradient(transparent,rgba(4,5,7,.86) 38%);pointer-events:none}
   #linha{display:flex;align-items:center;gap:14px;max-width:1100px;margin:0 auto;
@@ -198,12 +198,17 @@ void main(){
     uVazio:{value:new THREE.Vector3(0.035,0.040,0.047)},
   };
 
+  // a guarda do 0x0: webview/iframe que abre com altura zero daria aspect NaN, e o NaN gruda
+  // na camera (tela preta pra sempre). Sem ela a distancia derivada, que entra logo abaixo,
+  // seria mais fragil que o literal fixo que ela substitui.
+  const aspectoSeguro = () =>
+    (innerWidth > 0 && innerHeight > 0) ? innerWidth/innerHeight : 16/9;
+
   const cena = new THREE.Scene();
-  const cam = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, 0.01, 100);
-  cam.position.z = 3.1;
+  const cam = new THREE.PerspectiveCamera(38, aspectoSeguro(), 0.01, 100);
   const rend = new THREE.WebGLRenderer({canvas:document.getElementById('tela'), antialias:true});
   rend.setPixelRatio(Math.min(devicePixelRatio, 2));
-  rend.setSize(innerWidth, innerHeight);
+  rend.setSize(Math.max(innerWidth,1), Math.max(innerHeight,1));
   rend.setClearColor(0x07080a);
 
   const globo = new THREE.Mesh(
@@ -211,26 +216,88 @@ void main(){
     new THREE.ShaderMaterial({vertexShader:VS, fragmentShader:FS.replace(/NP/g, NP), uniforms}));
   cena.add(globo);
 
+  // ENQUADRAMENTO DERIVADO DO LADO MAIS APERTADO.
+  // O fov do three.js e VERTICAL: em retrato (aspect 0,46 num 375x812) o campo HORIZONTAL
+  // desaba pra 18 graus e o globo sai cortado pelas laterais - metade dele fora da tela, sem
+  // jeito de afastar. Logo a distancia nao pode ser um numero fixo: sai do MENOR dos dois fovs.
+  // Em paisagem a conta devolve o 3,1 aprovado no desktop, entao ali nada muda.
+  const MARGEM_PAISAGEM = 1.067;   // a folga exata do enquadramento aprovado (3,1 num fov de 38)
+  const MARGEM_RETRATO  = 1.20;    // respiro a mais: em retrato o HUD ocupa o rodape
+  function distanciaDeEncaixe(){
+    const asp  = aspectoSeguro();
+    const fovV = cam.fov*Math.PI/180;
+    const fovH = 2*Math.atan(Math.tan(fovV/2)*asp);
+    return (asp < 1 ? MARGEM_RETRATO : MARGEM_PAISAGEM) / Math.tan(Math.min(fovV, fovH)/2);
+  }
+  let dEncaixe = distanciaDeEncaixe();
+  cam.position.z = dEncaixe;
+  // o teto tambem e relativo: um teto fixo (era 6) barrava o proprio encaixe do retrato (6,7) -
+  // com o teto velho, nem com pinca daria pra afastar o suficiente.
+  const prender = z => Math.max(dEncaixe*0.40, Math.min(dEncaixe*2.2, z));
+
   addEventListener('resize', ()=>{
-    cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
-    rend.setSize(innerWidth, innerHeight);
+    const bruto = cam.position.z / dEncaixe;      // preserva o zoom escolhido ao girar o aparelho
+    const fator = Number.isFinite(bruto) ? bruto : 1;
+    cam.aspect = aspectoSeguro(); cam.updateProjectionMatrix();
+    rend.setSize(Math.max(innerWidth,1), Math.max(innerHeight,1));
+    dEncaixe = distanciaDeEncaixe();
+    cam.position.z = prender(dEncaixe * fator);
   });
 
-  // arrastar para girar; roda para aproximar
-  let arrastando=false, px=0, py=0, giroY=-1.2, giroX=0.25;
+  // 1 dedo (ou o mouse) gira; 2 dedos aproximam; a roda segue valendo no desktop
+  let giroY=-1.2, giroX=0.25;
   const tela = rend.domElement;
-  tela.addEventListener('pointerdown', e=>{arrastando=true; px=e.clientX; py=e.clientY;});
-  addEventListener('pointerup', ()=>arrastando=false);
-  addEventListener('pointermove', e=>{
-    if(!arrastando) return;
-    giroY += (e.clientX-px)*0.005; giroX += (e.clientY-py)*0.005;
-    giroX = Math.max(-1.5, Math.min(1.5, giroX));
-    px=e.clientX; py=e.clientY;
+  const dedos = new Map();     // pointerId -> ultima posicao. Sem rastrear cada dedo, o segundo
+  let vaoPinca = 0;            // toque da pinca entra como arrasto e o globo enlouquece.
+  const vao = () => {
+    const [a,b] = [...dedos.values()];
+    return Math.hypot(a.x-b.x, a.y-b.y);
+  };
+
+  tela.addEventListener('pointerdown', e=>{
+    tela.setPointerCapture(e.pointerId);
+    dedos.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    if (dedos.size === 2) vaoPinca = vao();
   });
+  const soltar = e => { dedos.delete(e.pointerId); vaoPinca = 0; };
+  tela.addEventListener('pointerup', soltar);
+  tela.addEventListener('pointercancel', soltar);
+  addEventListener('pointerup', soltar);
+
+  tela.addEventListener('pointermove', e=>{
+    const ultimo = dedos.get(e.pointerId);
+    if (!ultimo) return;
+    const dx = e.clientX-ultimo.x, dy = e.clientY-ultimo.y;
+    ultimo.x = e.clientX; ultimo.y = e.clientY;
+
+    if (dedos.size >= 2){
+      const agora = vao();
+      if (vaoPinca > 0 && agora > 0) cam.position.z = prender(cam.position.z * (vaoPinca/agora));
+      vaoPinca = agora;
+      return;                  // com 2 dedos so se aproxima: girar junto vira tremor
+    }
+    giroY += dx*0.005; giroX += dy*0.005;
+    giroX = Math.max(-1.5, Math.min(1.5, giroX));
+  });
+
   tela.addEventListener('wheel', e=>{
     e.preventDefault();
-    cam.position.z = Math.max(1.25, Math.min(6, cam.position.z + e.deltaY*0.0016));
+    cam.position.z = prender(cam.position.z + e.deltaY*0.0016);
   }, {passive:false});
+
+  // hook de conferencia por efeito (a aba do Code nao compoe frames) - padrao do window.__cine da 011
+  window.__deg2 = {
+    get z(){ return cam.position.z; },
+    get encaixe(){ return dEncaixe; },
+    get aspect(){ return cam.aspect; },
+    get t(){ return uniforms.uT.value; },
+    // meia-extensao visivel no lado mais apertado; tem que ser > 1 (o raio do globo) pra caber
+    get folga(){
+      const fovV = cam.fov*Math.PI/180;
+      const fovH = 2*Math.atan(Math.tan(fovV/2)*cam.aspect);
+      return cam.position.z*Math.tan(Math.min(fovV,fovH)/2);
+    },
+  };
 
   const sl = document.getElementById('t'), rot = document.getElementById('ma'),
         bt = document.getElementById('play');
