@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A Terra nua, sem agua e sem nome: o relevo global pintado por altitude e esculpido por sombra dura, num globo onde as placas se movem pelos seus polos de Euler reais.">
+<link rel="icon" href="../marca/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../marca/favicon-32.png">
+<meta property="og:title" content="A Terra Nua - Datart GenLab">
+<meta property="og:description" content="O relevo global por altitude, num globo onde as placas se movem pelos vetores reais. Cenario, nao previsao.">
+<meta property="og:image" content="../marca/og.png">
+<title>013 · A Terra Nua — degrau 2 (as placas se movendo)</title>
+<style>
+  html,body{margin:0;height:100%;background:#07080a;color:#e8e8e8;
+    font-family:system-ui,'Segoe UI',sans-serif;overflow:hidden}
+  #tela{position:fixed;inset:0}
+  #hud{position:fixed;left:0;right:0;bottom:0;padding:14px 18px 16px;
+    background:linear-gradient(transparent,rgba(4,5,7,.86) 38%);pointer-events:none}
+  #linha{display:flex;align-items:center;gap:14px;max-width:1100px;margin:0 auto;
+    pointer-events:auto}
+  #t{flex:1;accent-color:#c8804a}
+  button{background:#1b2027;color:#dfe6ee;border:1px solid #2c343e;border-radius:8px;
+    padding:8px 14px;cursor:pointer;font-size:14px}
+  button:hover{background:#242b34}
+  #ma{font-variant-numeric:tabular-nums;font-size:19px;min-width:132px;text-align:right}
+  #nota{max-width:1100px;margin:9px auto 0;font-size:12px;line-height:1.5;color:#8d99a6;
+    pointer-events:auto}
+  #nota b{color:#c8a08a;font-weight:600}
+  #titulo{position:fixed;top:16px;left:20px;font-size:13px;color:#7d8794;letter-spacing:.04em}
+  #titulo b{display:block;font-size:17px;color:#dfe6ee;letter-spacing:0;margin-bottom:2px}
+  #carga{position:fixed;inset:0;display:grid;place-items:center;font-size:15px;color:#8d99a6}
+
+  #volta{position:fixed;top:16px;right:20px;font-size:12px;letter-spacing:.06em;
+    color:#7d8794;text-decoration:none;border:1px solid #232a33;border-radius:8px;
+    padding:6px 11px;background:rgba(10,12,16,.55)}
+  #volta:hover{color:#dfe6ee;border-color:#3a4350}
+</style>
+</head>
+<body>
+<canvas id="tela"></canvas>
+<a id="volta" href="../">Datart GenLab</a>
+
+<div id="carga">assando o planeta…</div>
+<div id="titulo"><b>A Terra Nua</b>degrau 2 — as placas se movendo</div>
+<div id="hud">
+  <div id="linha">
+    <button id="play">pausar</button>
+    <input id="t" type="range" min="0" max="50" step="0.1" value="0">
+    <div id="ma">hoje</div>
+  </div>
+  <div id="nota">
+    <b>Isto é um cenário, não uma previsão.</b> Cada placa gira pelo seu polo de Euler real
+    (NNR-MORVEL56) e carrega o relevo congelado; a velocidade de hoje é extrapolada linearmente,
+    e ela não continua por 50 milhões de anos. Onde nenhuma placa cobre mais o ponto, a crosta
+    ainda não existe: fica <b>vazio declarado</b>, não pintado. Onde duas se sobrepõem, a mais
+    baixa submerge. Cor = altitude (rampa global equalizada); sombra = sol fixo 315°/32°, realce
+    ×1,3 só na sombra. Microplacas travam em meia volta.
+  </div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script>
+const VS = `
+varying vec3 vPos;
+void main(){ vPos = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
+`;
+
+const FS = `
+precision highp float;
+varying vec3 vPos;
+uniform sampler2D uElev, uElevSh, uPlates;
+uniform vec3  uAxis[NP];
+uniform float uOmega[NP];
+uniform vec2  uLatLim[NP];
+uniform float uT, uMaxGiro, uExag, uAzi, uAlt, uPiso, uGanho, uZmin, uZmax;
+uniform vec2  uTexel;
+uniform float uRampM[10];
+uniform vec3  uRampC[10];
+uniform float uOceM[4];
+uniform vec3  uOceC[4];
+uniform vec3  uVazio;
+
+vec2 dirUV(vec3 d){
+  float lat = degrees(asin(clamp(d.y,-1.0,1.0)));
+  float lon = degrees(atan(d.x, d.z));
+  return vec2((lon+180.0)/360.0, (90.0-lat)/180.0);
+}
+vec3 gira(vec3 v, vec3 k, float a){
+  float c = cos(a), s = sin(a);
+  return v*c + cross(k,v)*s + k*dot(k,v)*(1.0-c);
+}
+float alt(sampler2D t, vec2 uv){
+  vec3 c = texture2D(t, uv).rgb;
+  return mix(uZmin, uZmax, (c.r*255.0*256.0 + c.g*255.0)/65535.0);
+}
+// saida unica: o compilador HLSL nao consegue provar que os returns dentro do laco cobrem
+// todos os caminhos, e avisa "potentially uninitialized". Um resultado so mata o aviso.
+vec3 tinta(float z){
+  vec3 r;
+  if (z >= 0.0){
+    r = uRampC[9];
+    for (int i=1;i<10;i++){
+      if (z <= uRampM[i]){
+        float f = clamp((z-uRampM[i-1])/max(uRampM[i]-uRampM[i-1],1e-4), 0.0, 1.0);
+        r = mix(uRampC[i-1], uRampC[i], f);
+        break;
+      }
+    }
+  } else {
+    r = uOceC[3];
+    for (int i=1;i<4;i++){
+      if (z >= uOceM[i]){
+        float f = clamp((z-uOceM[i-1])/min(uOceM[i]-uOceM[i-1],-1e-4), 0.0, 1.0);
+        r = mix(uOceC[i-1], uOceC[i], f);
+        break;
+      }
+    }
+  }
+  return r;
+}
+
+void main(){
+  // A INVERSAO: nao movo a crosta. Para cada ponto do globo pergunto "de onde voce veio?",
+  // girando o ponto DE VOLTA pela rotacao de cada placa. Quem reconhecer o ponto no mapa
+  // original e o dono. Sem malha para rasgar, sem poligono recalculado por frame.
+  int dono = -1; float melhor = -1e9; vec2 uvDono = vec2(0.0);
+  for (int i=0;i<NP;i++){
+    float ang = radians(clamp(uOmega[i]*uT, -uMaxGiro, uMaxGiro));
+    vec3 q = gira(vPos, uAxis[i], -ang);
+    float lat = degrees(asin(clamp(q.y,-1.0,1.0)));
+    if (lat < uLatLim[i].x - 0.5 || lat > uLatLim[i].y + 0.5) continue;  // corte barato
+    vec2 uv = dirUV(q);
+    float id = floor(texture2D(uPlates, uv).r*255.0 + 0.5);
+    if (abs(id - float(i+1)) > 0.5) continue;
+    float e = alt(uElev, uv);
+    if (e > melhor){ melhor = e; dono = i; uvDono = uv; }   // a mais ALTA sobrevive: a densa submerge
+  }
+
+  if (dono < 0){ gl_FragColor = vec4(uVazio, 1.0); return; }   // a crosta ainda nao existe
+
+  // sombra: do campo COM realce; cor: do campo SEM realce. A separacao que salva a legenda.
+  float ze = alt(uElevSh, uvDono + vec2(uTexel.x,0.0));
+  float zw = alt(uElevSh, uvDono - vec2(uTexel.x,0.0));
+  float zn = alt(uElevSh, uvDono - vec2(0.0,uTexel.y));
+  float zs = alt(uElevSh, uvDono + vec2(0.0,uTexel.y));
+  float latq = 90.0 - uvDono.y*180.0;
+  float dy = 111320.0 * (180.0*uTexel.y);
+  float dx = max(dy * cos(radians(latq)), 1.0);
+  float dzdx = (ze-zw)/(2.0*dx) * uExag;
+  float dzdy = (zn-zs)/(2.0*dy) * uExag;
+  float decl = atan(sqrt(dzdx*dzdx + dzdy*dzdy));
+  float asp  = atan(dzdy, -dzdx);
+  float zen  = radians(90.0 - uAlt);
+  float azi  = radians(360.0 - uAzi + 90.0);
+  float hs = cos(zen)*cos(decl) + sin(zen)*sin(decl)*cos(azi - asp);
+  hs = clamp(hs, 0.0, 1.0);
+
+  gl_FragColor = vec4(tinta(melhor) / 255.0 * (uPiso + uGanho*hs), 1.0);
+}
+`;
+
+(async function(){
+  const meta = await (await fetch('placas.json')).json();
+  const placas = meta.placas.slice(1);
+  const NP = placas.length;
+
+  const carregar = (u) => new Promise(res => new THREE.TextureLoader().load(u, res));
+  const [tE, tS, tP] = await Promise.all([carregar('elev.png'), carregar('elevsh.png'), carregar('placas.png')]);
+  for (const t of [tE, tS, tP]){
+    t.flipY = false;                       // linha 0 do arquivo = NORTE
+    t.wrapS = THREE.RepeatWrapping;        // o mundo e um cilindro
+    t.wrapT = THREE.ClampToEdgeWrapping;
+    t.generateMipmaps = false;
+    t.minFilter = THREE.LinearFilter;
+  }
+  tP.minFilter = tP.magFilter = THREE.NearestFilter;   // ID de placa NUNCA se interpola
+
+  const rad = d => d*Math.PI/180;
+  const eixo = p => new THREE.Vector3(
+    Math.cos(rad(p.lat))*Math.sin(rad(p.lon)),
+    Math.sin(rad(p.lat)),
+    Math.cos(rad(p.lat))*Math.cos(rad(p.lon)));
+
+  const uniforms = {
+    uElev:{value:tE}, uElevSh:{value:tS}, uPlates:{value:tP},
+    uAxis:{value: placas.map(eixo)},
+    uOmega:{value: placas.map(p=>p.w)},
+    uLatLim:{value: placas.map(p=>new THREE.Vector2(p.lat_min, p.lat_max))},
+    uT:{value:0}, uMaxGiro:{value:180},
+    uExag:{value:meta.sol.exagero}, uAzi:{value:meta.sol.azimute}, uAlt:{value:meta.sol.altitude},
+    uPiso:{value:meta.sol.piso}, uGanho:{value:meta.sol.ganho},
+    uZmin:{value:meta.z_min}, uZmax:{value:meta.z_max},
+    uTexel:{value:new THREE.Vector2(1/meta.grade[0], 1/meta.grade[1])},
+    uRampM:{value: meta.rampa_terra.map(s=>s.m)},
+    uRampC:{value: meta.rampa_terra.map(s=>new THREE.Vector3(...s.rgb))},
+    uOceM:{value: meta.rampa_oceano.map(s=>s.m)},
+    uOceC:{value: meta.rampa_oceano.map(s=>new THREE.Vector3(...s.rgb))},
+    uVazio:{value:new THREE.Vector3(0.035,0.040,0.047)},
+  };
+
+  const cena = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, 0.01, 100);
+  cam.position.z = 3.1;
+  const rend = new THREE.WebGLRenderer({canvas:document.getElementById('tela'), antialias:true});
+  rend.setPixelRatio(Math.min(devicePixelRatio, 2));
+  rend.setSize(innerWidth, innerHeight);
+  rend.setClearColor(0x07080a);
+
+  const globo = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 128, 96),
+    new THREE.ShaderMaterial({vertexShader:VS, fragmentShader:FS.replace(/NP/g, NP), uniforms}));
+  cena.add(globo);
+
+  addEventListener('resize', ()=>{
+    cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
+    rend.setSize(innerWidth, innerHeight);
+  });
+
+  // arrastar para girar; roda para aproximar
+  let arrastando=false, px=0, py=0, giroY=-1.2, giroX=0.25;
+  const tela = rend.domElement;
+  tela.addEventListener('pointerdown', e=>{arrastando=true; px=e.clientX; py=e.clientY;});
+  addEventListener('pointerup', ()=>arrastando=false);
+  addEventListener('pointermove', e=>{
+    if(!arrastando) return;
+    giroY += (e.clientX-px)*0.005; giroX += (e.clientY-py)*0.005;
+    giroX = Math.max(-1.5, Math.min(1.5, giroX));
+    px=e.clientX; py=e.clientY;
+  });
+  tela.addEventListener('wheel', e=>{
+    e.preventDefault();
+    cam.position.z = Math.max(1.25, Math.min(6, cam.position.z + e.deltaY*0.0016));
+  }, {passive:false});
+
+  const sl = document.getElementById('t'), rot = document.getElementById('ma'),
+        bt = document.getElementById('play');
+  let tocando = true;
+  bt.onclick = ()=>{ tocando = !tocando; bt.textContent = tocando ? 'pausar' : 'tocar'; };
+  sl.addEventListener('input', ()=>{ uniforms.uT.value = +sl.value; });
+  sl.addEventListener('pointerdown', ()=>{ tocando=false; bt.textContent='tocar'; });
+
+  document.getElementById('carga').remove();
+  let ultimo = performance.now();
+  (function laco(agora){
+    const dt = Math.min((agora-ultimo)/1000, 0.05); ultimo = agora;
+    if (tocando){
+      let t = uniforms.uT.value + dt*2.2;          // ~23 s para atravessar os 50 Ma
+      if (t > 50) t = 0;
+      uniforms.uT.value = t; sl.value = t;
+    }
+    const t = uniforms.uT.value;
+    rot.textContent = t < 0.05 ? 'hoje' : '+' + t.toFixed(1) + ' Ma';
+    globo.rotation.set(giroX, giroY, 0);
+    rend.render(cena, cam);
+    requestAnimationFrame(laco);
+  })(performance.now());
+})();
+</script>
+</body>
+</html>

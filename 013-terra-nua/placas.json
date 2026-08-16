@@ -1,0 +1,710 @@
+{
+ "grade": [
+  3600,
+  1800
+ ],
+ "z_min": -11000.0,
+ "z_max": 7000.0,
+ "placas": [
+  {
+   "idx": 0,
+   "cod": "-",
+   "nome": "sem placa"
+  },
+  {
+   "idx": 1,
+   "cod": "AF",
+   "morvel": "nb",
+   "nome": "Africa",
+   "lat": 47.68,
+   "lon": -68.44,
+   "w": 0.292,
+   "lat_min": -54.80000000000001,
+   "lat_max": 39.3
+  },
+  {
+   "idx": 2,
+   "cod": "AN",
+   "morvel": "an",
+   "nome": "Antarctica",
+   "lat": 65.42,
+   "lon": -118.11,
+   "w": 0.25,
+   "lat_min": -90.0,
+   "lat_max": -25.700000000000003
+  },
+  {
+   "idx": 3,
+   "cod": "SO",
+   "morvel": "sm",
+   "nome": "Somalia",
+   "lat": 49.95,
+   "lon": -84.52,
+   "w": 0.339,
+   "lat_min": -47.30000000000001,
+   "lat_max": 14.799999999999997
+  },
+  {
+   "idx": 4,
+   "cod": "IN",
+   "morvel": "IN",
+   "nome": "India",
+   "lat": 50.37,
+   "lon": -3.29,
+   "w": 0.544,
+   "lat_min": -7.0,
+   "lat_max": 34.6
+  },
+  {
+   "idx": 5,
+   "cod": "AU",
+   "morvel": "au",
+   "nome": "Australia",
+   "lat": 33.86,
+   "lon": 37.94,
+   "w": 0.632,
+   "lat_min": -63.0,
+   "lat_max": 2.0999999999999943
+  },
+  {
+   "idx": 6,
+   "cod": "EU",
+   "morvel": "eu",
+   "nome": "Eurasia",
+   "lat": 48.85,
+   "lon": -106.5,
+   "w": 0.223,
+   "lat_min": 14.400000000000006,
+   "lat_max": 86.8
+  },
+  {
+   "idx": 7,
+   "cod": "NA",
+   "morvel": "na",
+   "nome": "North America",
+   "lat": -4.85,
+   "lon": -80.64,
+   "w": 0.209,
+   "lat_min": 12.599999999999994,
+   "lat_max": 90.0
+  },
+  {
+   "idx": 8,
+   "cod": "SA",
+   "morvel": "sa",
+   "nome": "South America",
+   "lat": -22.62,
+   "lon": -112.83,
+   "w": 0.109,
+   "lat_min": -60.900000000000006,
+   "lat_max": 19.5
+  },
+  {
+   "idx": 9,
+   "cod": "NZ",
+   "morvel": "nz",
+   "nome": "Nazca",
+   "lat": 46.23,
+   "lon": -101.06,
+   "w": 0.696,
+   "lat_min": -45.80000000000001,
+   "lat_max": 7.400000000000006
+  },
+  {
+   "idx": 10,
+   "cod": "PA",
+   "morvel": "pa",
+   "nome": "Pacific",
+   "lat": -63.58,
+   "lon": 114.7,
+   "w": 0.651,
+   "lat_min": -66.19999999999999,
+   "lat_max": 60.5
+  },
+  {
+   "idx": 11,
+   "cod": "AR",
+   "morvel": "ar",
+   "nome": "Arabia",
+   "lat": 48.88,
+   "lon": -8.49,
+   "w": 0.559,
+   "lat_min": 11.5,
+   "lat_max": 39.0
+  },
+  {
+   "idx": 12,
+   "cod": "SU",
+   "morvel": "su",
+   "nome": "Sunda",
+   "lat": 50.06,
+   "lon": -95.02,
+   "w": 0.337,
+   "lat_min": -11.599999999999994,
+   "lat_max": 22.200000000000003
+  },
+  {
+   "idx": 13,
+   "cod": "TI",
+   "morvel": "TI",
+   "nome": "Timor",
+   "lat": -4.44,
+   "lon": 113.5,
+   "w": 1.864,
+   "lat_min": -11.5,
+   "lat_max": -6.400000000000006
+  },
+  {
+   "idx": 14,
+   "cod": "KE",
+   "morvel": "KE",
+   "nome": "Kermadec",
+   "lat": 39.99,
+   "lon": 6.46,
+   "w": 2.347,
+   "lat_min": -42.099999999999994,
+   "lat_max": -23.799999999999997
+  },
+  {
+   "idx": 15,
+   "cod": "TO",
+   "morvel": "TO",
+   "nome": "Tonga",
+   "lat": 25.87,
+   "lon": 4.48,
+   "w": 8.942,
+   "lat_min": -24.200000000000003,
+   "lat_max": -14.5
+  },
+  {
+   "idx": 16,
+   "cod": "NI",
+   "morvel": "NI",
+   "nome": "Niuafo'ou",
+   "lat": -3.29,
+   "lon": -174.49,
+   "w": 3.314,
+   "lat_min": -19.799999999999997,
+   "lat_max": -14.299999999999997
+  },
+  {
+   "idx": 17,
+   "cod": "WL",
+   "morvel": "WL",
+   "nome": "Woodlark",
+   "lat": 0.1,
+   "lon": 128.52,
+   "w": 1.744,
+   "lat_min": -10.400000000000006,
+   "lat_max": -1.2000000000000028
+  },
+  {
+   "idx": 18,
+   "cod": "MO",
+   "morvel": "MO",
+   "nome": "Maoke",
+   "lat": 14.25,
+   "lon": 92.67,
+   "w": 0.774,
+   "lat_min": -5.200000000000003,
+   "lat_max": -1.7000000000000028
+  },
+  {
+   "idx": 19,
+   "cod": "SB",
+   "morvel": "SB",
+   "nome": "South Bismarck",
+   "lat": 6.88,
+   "lon": -31.89,
+   "w": 8.111,
+   "lat_min": -7.400000000000006,
+   "lat_max": -2.9000000000000057
+  },
+  {
+   "idx": 20,
+   "cod": "SS",
+   "morvel": "SS",
+   "nome": "Solomon Sea",
+   "lat": -2.87,
+   "lon": 130.62,
+   "w": 1.703,
+   "lat_min": -9.200000000000003,
+   "lat_max": -5.599999999999994
+  },
+  {
+   "idx": 21,
+   "cod": "NB",
+   "morvel": "NB",
+   "nome": "North Bismarck",
+   "lat": -45.04,
+   "lon": 127.64,
+   "w": 0.856,
+   "lat_min": -7.299999999999997,
+   "lat_max": -0.29999999999999716
+  },
+  {
+   "idx": 22,
+   "cod": "NH",
+   "morvel": "NH",
+   "nome": "New Hebrides",
+   "lat": 0.57,
+   "lon": -6.6,
+   "w": 2.469,
+   "lat_min": -23.200000000000003,
+   "lat_max": -13.400000000000006
+  },
+  {
+   "idx": 23,
+   "cod": "CA",
+   "morvel": "ca",
+   "nome": "Caribbean",
+   "lat": 35.2,
+   "lon": -92.62,
+   "w": 0.286,
+   "lat_min": 9.299999999999997,
+   "lat_max": 20.400000000000006
+  },
+  {
+   "idx": 24,
+   "cod": "CO",
+   "morvel": "co",
+   "nome": "Cocos",
+   "lat": 26.93,
+   "lon": -124.31,
+   "w": 1.198,
+   "lat_min": 0.7999999999999972,
+   "lat_max": 18.700000000000003
+  },
+  {
+   "idx": 25,
+   "cod": "OK",
+   "morvel": "OK",
+   "nome": "Okhotsk",
+   "lat": 30.3,
+   "lon": -92.28,
+   "w": 0.229,
+   "lat_min": 34.3,
+   "lat_max": 65.3
+  },
+  {
+   "idx": 26,
+   "cod": "JF",
+   "morvel": "jf",
+   "nome": "Juan de Fuca",
+   "lat": -38.31,
+   "lon": 60.04,
+   "w": 0.951,
+   "lat_min": 40.3,
+   "lat_max": 51.7
+  },
+  {
+   "idx": 27,
+   "cod": "AP",
+   "morvel": "AP",
+   "nome": "Altiplano",
+   "lat": -6.58,
+   "lon": -83.98,
+   "w": 0.488,
+   "lat_min": -22.0,
+   "lat_max": -12.299999999999997
+  },
+  {
+   "idx": 28,
+   "cod": "ND",
+   "morvel": "ND",
+   "nome": "North Andes",
+   "lat": 17.73,
+   "lon": -122.68,
+   "w": 0.116,
+   "lat_min": -3.299999999999997,
+   "lat_max": 13.599999999999994
+  },
+  {
+   "idx": 29,
+   "cod": "ON",
+   "morvel": "ON",
+   "nome": "Okinawa",
+   "lat": 36.12,
+   "lon": 137.92,
+   "w": 2.539,
+   "lat_min": 23.400000000000006,
+   "lat_max": 32.0
+  },
+  {
+   "idx": 30,
+   "cod": "PS",
+   "morvel": "ps",
+   "nome": "Philippine Sea",
+   "lat": -46.02,
+   "lon": -31.36,
+   "w": 0.91,
+   "lat_min": 0.09999999999999432,
+   "lat_max": 35.1
+  },
+  {
+   "idx": 31,
+   "cod": "AM",
+   "morvel": "am",
+   "nome": "Amur",
+   "lat": 63.17,
+   "lon": -122.82,
+   "w": 0.297,
+   "lat_min": 30.700000000000003,
+   "lat_max": 57.4
+  },
+  {
+   "idx": 32,
+   "cod": "CL",
+   "morvel": "CL",
+   "nome": "Caroline",
+   "lat": -72.78,
+   "lon": 72.05,
+   "w": 0.607,
+   "lat_min": -2.700000000000003,
+   "lat_max": 9.400000000000006
+  },
+  {
+   "idx": 33,
+   "cod": "MA",
+   "morvel": "MA",
+   "nome": "Mariana",
+   "lat": 11.05,
+   "lon": 137.84,
+   "w": 1.306,
+   "lat_min": 11.400000000000006,
+   "lat_max": 24.400000000000006
+  },
+  {
+   "idx": 34,
+   "cod": "FT",
+   "morvel": "FT",
+   "nome": "Futuna",
+   "lat": -16.33,
+   "lon": 178.07,
+   "w": 5.101,
+   "lat_min": -15.700000000000003,
+   "lat_max": -13.900000000000006
+  },
+  {
+   "idx": 35,
+   "cod": "SC",
+   "morvel": "SC",
+   "nome": "Scotia",
+   "lat": 22.52,
+   "lon": -106.15,
+   "w": 0.146,
+   "lat_min": -61.5,
+   "lat_max": -52.0
+  },
+  {
+   "idx": 36,
+   "cod": "SL",
+   "morvel": "SL",
+   "nome": "Shetland",
+   "lat": 50.71,
+   "lon": -143.47,
+   "w": 0.268,
+   "lat_min": -63.30000000000001,
+   "lat_max": -60.5
+  },
+  {
+   "idx": 37,
+   "cod": "AS",
+   "morvel": "AS",
+   "nome": "Aegean Sea",
+   "lat": 19.43,
+   "lon": 122.87,
+   "w": 0.124,
+   "lat_min": 34.1,
+   "lat_max": 40.1
+  },
+  {
+   "idx": 38,
+   "cod": "AT",
+   "morvel": "AT",
+   "nome": "Anatolia",
+   "lat": 40.11,
+   "lon": 26.66,
+   "w": 1.21,
+   "lat_min": 34.2,
+   "lat_max": 41.2
+  },
+  {
+   "idx": 39,
+   "cod": "YA",
+   "morvel": "yz",
+   "nome": "Yangtze",
+   "lat": 63.03,
+   "lon": -116.62,
+   "w": 0.334,
+   "lat_min": 18.400000000000006,
+   "lat_max": 34.9
+  },
+  {
+   "idx": 40,
+   "cod": "BU",
+   "morvel": "BU",
+   "nome": "Burma",
+   "lat": -6.13,
+   "lon": -78.1,
+   "w": 2.229,
+   "lat_min": 1.2999999999999972,
+   "lat_max": 15.900000000000006
+  },
+  {
+   "idx": 41,
+   "cod": "RI",
+   "morvel": "ri",
+   "nome": "Rivera",
+   "lat": 20.25,
+   "lon": -107.29,
+   "w": 4.536,
+   "lat_min": 17.799999999999997,
+   "lat_max": 22.0
+  },
+  {
+   "idx": 42,
+   "cod": "BH",
+   "morvel": "BH",
+   "nome": "Birds Head",
+   "lat": -40.0,
+   "lon": 100.5,
+   "w": 0.799,
+   "lat_min": -4.799999999999997,
+   "lat_max": 2.4000000000000057
+  },
+  {
+   "idx": 43,
+   "cod": "MS",
+   "morvel": "MS",
+   "nome": "Molucca Sea",
+   "lat": 2.15,
+   "lon": -56.09,
+   "w": 3.566,
+   "lat_min": -4.799999999999997,
+   "lat_max": 2.4000000000000057
+  },
+  {
+   "idx": 44,
+   "cod": "BS",
+   "morvel": "BS",
+   "nome": "Banda Sea",
+   "lat": -1.49,
+   "lon": 121.64,
+   "w": 2.475,
+   "lat_min": -8.099999999999994,
+   "lat_max": 0.0
+  },
+  {
+   "idx": 45,
+   "cod": "MN",
+   "morvel": "MN",
+   "nome": "Manus",
+   "lat": -3.67,
+   "lon": 150.27,
+   "w": 51.569,
+   "lat_min": -4.0,
+   "lat_max": -3.0
+  },
+  {
+   "idx": 46,
+   "cod": "CR",
+   "morvel": "CR",
+   "nome": "Conway Reef",
+   "lat": -20.4,
+   "lon": 170.53,
+   "w": 3.923,
+   "lat_min": -22.5,
+   "lat_max": -16.599999999999994
+  },
+  {
+   "idx": 47,
+   "cod": "BR",
+   "morvel": "BR",
+   "nome": "Balmoral Reef",
+   "lat": -63.74,
+   "lon": 142.06,
+   "w": 0.49,
+   "lat_min": -16.900000000000006,
+   "lat_max": -13.200000000000003
+  },
+  {
+   "idx": 48,
+   "cod": "EA",
+   "morvel": "EA",
+   "nome": "Easter",
+   "lat": 24.97,
+   "lon": 67.53,
+   "w": 11.334,
+   "lat_min": -26.900000000000006,
+   "lat_max": -22.099999999999994
+  },
+  {
+   "idx": 49,
+   "cod": "JZ",
+   "morvel": "JZ",
+   "nome": "Juan Fernandez",
+   "lat": 34.25,
+   "lon": 70.74,
+   "w": 22.368,
+   "lat_min": -35.099999999999994,
+   "lat_max": -31.5
+  },
+  {
+   "idx": 50,
+   "cod": "GP",
+   "morvel": "GP",
+   "nome": "Galapagos",
+   "lat": 2.53,
+   "lon": 81.18,
+   "w": 5.487,
+   "lat_min": 1.0999999999999943,
+   "lat_max": 2.700000000000003
+  },
+  {
+   "idx": 51,
+   "cod": "SW",
+   "morvel": "SW",
+   "nome": "Sandwich",
+   "lat": -29.94,
+   "lon": -36.87,
+   "w": 1.362,
+   "lat_min": -60.69999999999999,
+   "lat_max": -55.0
+  },
+  {
+   "idx": 52,
+   "cod": "PM",
+   "morvel": "PM",
+   "nome": "Panama",
+   "lat": 31.35,
+   "lon": -113.9,
+   "w": 0.317,
+   "lat_min": 6.900000000000006,
+   "lat_max": 10.700000000000003
+  }
+ ],
+ "rampa_terra": [
+  {
+   "m": 0.0,
+   "rgb": [
+    118,
+    178,
+    188
+   ]
+  },
+  {
+   "m": 77.51545261637371,
+   "rgb": [
+    108,
+    184,
+    172
+   ]
+  },
+  {
+   "m": 168.9771230875651,
+   "rgb": [
+    104,
+    186,
+    144
+   ]
+  },
+  {
+   "m": 297.29636547851544,
+   "rgb": [
+    134,
+    190,
+    118
+   ]
+  },
+  {
+   "m": 455.39588639322915,
+   "rgb": [
+    180,
+    190,
+    108
+   ]
+  },
+  {
+   "m": 744.4611360677084,
+   "rgb": [
+    216,
+    176,
+    96
+   ]
+  },
+  {
+   "m": 1241.2458681640585,
+   "rgb": [
+    228,
+    158,
+    84
+   ]
+  },
+  {
+   "m": 2133.1648776041666,
+   "rgb": [
+    222,
+    166,
+    130
+   ]
+  },
+  {
+   "m": 2904.6052493489583,
+   "rgb": [
+    216,
+    202,
+    186
+   ]
+  },
+  {
+   "m": 6383.3439609375,
+   "rgb": [
+    246,
+    246,
+    246
+   ]
+  }
+ ],
+ "rampa_oceano": [
+  {
+   "m": 0,
+   "rgb": [
+    78,
+    130,
+    167
+   ]
+  },
+  {
+   "m": -1500,
+   "rgb": [
+    44,
+    91,
+    133
+   ]
+  },
+  {
+   "m": -4000,
+   "rgb": [
+    24,
+    57,
+    97
+   ]
+  },
+  {
+   "m": -7500,
+   "rgb": [
+    10,
+    25,
+    54
+   ]
+  }
+ ],
+ "sol": {
+  "azimute": 315.0,
+  "altitude": 32.0,
+  "exagero": 13.0,
+  "piso": 0.22,
+  "ganho": 0.98
+ }
+}
